@@ -1,423 +1,1713 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<!--[if IE 7 | IE 8]>
+<html class="ie" dir="rtl">
+<![endif]-->
+<!--[if !(IE 7) | !(IE 8)  ]><!-->
+<html dir="rtl" lang="ar">
+<!--<![endif]-->
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>أبو عباس - الفواتير</title>
-<style>
-* { box-sizing: border-box; }
-:root { --gold:#f5d36a; --gold2:#c89219; --bg:#101010; }
-body { margin:0; font-family:Tahoma,Arial,sans-serif; background:var(--bg); color:var(--gold); }
-.page { display:none; min-height:100vh; }
-.page.active { display:block; }
-.home { min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:25px; text-align:center; padding:25px; background:radial-gradient(circle,#38301a,#141414 70%); }
-.home h1 { font-size:clamp(55px,9vw,95px); color:#ffda58; margin:0; }
-.home-buttons { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; margin-top:20px; }
-.home-buttons button { min-width:230px; min-height:95px; font-size:23px; }
-button { background:linear-gradient(135deg,#ffe67b,#c89219); color:#171717; border:1px solid #e6bd45; border-radius:10px; padding:13px 18px; font:inherit; font-weight:bold; cursor:pointer; touch-action:manipulation; }
-button:hover { background:#ffe88a; }
-button:disabled { opacity:.55; cursor:wait; }
-.container { max-width:950px; margin:25px auto; padding:28px; background:linear-gradient(145deg,#222,#111); border:2px solid #bd922e; border-radius:15px; }
-.toolbar,.actions { display:flex; flex-wrap:wrap; gap:12px; margin:22px 0; }
-.actions { justify-content:center; }
-.actions button { min-width:165px; flex:1 1 185px; }
-.header { display:flex; justify-content:center; align-items:center; margin-bottom:30px; text-align:center; }
-.header h1 { font-size:46px; color:#ffda58; margin:10px 0; }
-h2 { text-align:center; color:#ffda58; }
-.row { display:flex; gap:15px; margin-bottom:18px; }
-.field { flex:1; min-width:0; }
-label { display:block; margin-bottom:7px; font-weight:bold; }
-input,textarea { width:100%; padding:12px; background:#fff9e8; color:#111; border:2px solid #c99a24; border-radius:8px; font:inherit; font-size:16px; }
-.responsible { margin-top:30px; padding-top:18px; border-top:1px solid #a88129; }
-.table-wrap { overflow-x:auto; }
-table { width:100%; border-collapse:collapse; margin-top:20px; background:#fff; color:#111; }
-th,td { border:1px solid #777; padding:9px; text-align:center; }
-th { background:#d5a52c; color:#111; }
-td input { min-width:65px; padding:7px; }
-td button { padding:8px 12px; }
-.total { font-size:25px; font-weight:bold; margin:25px 0; }
-.contact { text-align:center; padding:22px; margin-top:30px; border-top:2px solid #d5a52c; font-weight:bold; }
-.phones { font-size:21px; margin-top:12px; direction:ltr; unicode-bidi:embed; }
-.saved-item { padding:15px; border-bottom:1px solid #a88129; display:flex; flex-wrap:wrap; align-items:center; gap:12px; }
-.saved-item span { flex:1 1 170px; overflow-wrap:anywhere; }
-.hint { font-size:14px; color:#ecd89e; line-height:1.7; }
-/* بطاقة تصدير الفاتورة: تصميم عمودي واضح عند عرضه على الهاتف */
-#renderStage { position:fixed; inset:0; z-index:10000; background:rgba(0,0,0,.75); display:none; overflow:auto; padding:12px; }
-#renderStage.open { display:block; }
-.export-card { width:100%; max-width:420px; margin:0 auto 20px; padding:25px 20px; background:#fff; color:#202020; font-family:Tahoma,Arial,sans-serif; direction:rtl; line-height:1.65; border-top:8px solid #bb8e24; border-radius:6px; }
-.export-card .export-title { text-align:center; margin:0 0 4px; font-size:36px; color:#6e4b09; }
-.export-card .export-subtitle { text-align:center; margin:0 0 18px; font-size:17px; color:#555; }
-.export-card .export-meta { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-bottom:18px; }
-.export-card .export-box { background:#f7f2e6; border:1px solid #dbc99d; border-radius:6px; padding:9px 10px; min-width:0; overflow-wrap:anywhere; }
-.export-card .export-label { font-size:12px; color:#6c6047; display:block; }
-.export-card .export-value { font-size:16px; font-weight:bold; display:block; overflow-wrap:anywhere; }
-.export-card .export-section { font-size:19px; color:#6e4b09; border-bottom:2px solid #c8a14d; margin:18px 0 10px; padding-bottom:4px; }
-.export-card .export-product { padding:12px 0; border-bottom:1px solid #ddd; }
-.export-card .export-product-name { font-weight:bold; font-size:17px; margin-bottom:6px; overflow-wrap:anywhere; }
-.export-card .export-product-details { display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; font-size:13px; text-align:center; }
-.export-card .export-product-details > div { background:#f7f7f7; padding:6px 3px; border-radius:4px; min-width:0; overflow-wrap:anywhere; }
-.export-card .export-product-details b { font-size:14px; display:block; color:#252525; }
-.export-card .export-total { background:#f2e5c6; color:#272018; padding:14px; text-align:center; font-size:22px; font-weight:bold; margin-top:18px; border-radius:6px; }
-.export-card .export-notes { white-space:pre-wrap; overflow-wrap:anywhere; margin:0; }
-.export-card .export-contact { text-align:center; padding-top:13px; margin-top:18px; border-top:2px solid #bc9030; font-weight:bold; font-size:15px; }
-.export-card .export-contact b { display:block; direction:ltr; font-size:17px; }
-#previewOverlay { display:none; position:fixed; inset:0; z-index:10001; background:rgba(0,0,0,.92); color:white; overflow:auto; padding:18px; text-align:center; }
-#previewOverlay.open { display:block; }
-#previewOverlay img { display:block; width:auto; max-width:100%; max-height:70vh; object-fit:contain; margin:14px auto; background:#fff; }
-#previewOverlay .preview-buttons { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:16px 0; }
-#previewOverlay p { line-height:1.7; }
-@media(max-width:650px) {
-  .container { margin:7px; padding:15px 12px; }
-  .row { flex-direction:column; gap:12px; }
-  .header h1 { font-size:35px; }
-  .home-buttons { width:100%; }
-  .home-buttons button { width:100%; min-width:0; }
-  .toolbar button { flex:1 1 125px; }
-  .actions { gap:10px; }
-  .actions button { flex:1 1 100%; }
-  .total { font-size:22px; }
-  .phones { font-size:18px; }
-  /* تحويل أصناف الفاتورة إلى بطاقات بدل جدول ضيق على الجوال */
-  #itemsTable, #itemsTable tbody, #itemsTable tr, #itemsTable td { display:block; width:100%; }
-  #itemsTable { background:transparent; margin-top:15px; }
-  #itemsTable thead { display:none; }
-  #itemsTable tr { margin-bottom:14px; border:1px solid #c99a24; border-radius:10px; overflow:hidden; background:#fff9e8; padding:9px; }
-  #itemsTable td { display:grid; grid-template-columns:85px minmax(0,1fr); align-items:center; border:0; text-align:right; padding:7px 3px; gap:8px; }
-  #itemsTable td::before { content:attr(data-label); font-weight:bold; color:#333; }
-  #itemsTable td input { width:100%; min-width:0; }
-  #itemsTable td.lineTotal { font-weight:bold; }
-  .export-card { padding:20px 15px; }
-}
-@media print {
-  @page { size:A4; margin:12mm; }
-  body { background:white !important; color:black !important; }
-  .page { display:none !important; }
-  #invoicePage { display:block !important; min-height:0; }
-  .container { margin:0; padding:0; border:0; background:#fff !important; max-width:none; }
-  .no-print,#renderStage,#previewOverlay { display:none !important; }
-  h1,h2,label,.total,.contact { color:black !important; }
-  input,textarea { background:white !important; color:black !important; border:1px solid #555 !important; padding:7px; }
-  th,td { border:1px solid black !important; }
-  th { background:#eee !important; color:black !important; }
-  .row { flex-direction:row !important; }
-  #itemsTable { display:table !important; width:100% !important; background:white !important; }
-  #itemsTable thead { display:table-header-group !important; }
-  #itemsTable tbody { display:table-row-group !important; }
-  #itemsTable tr { display:table-row !important; border:0 !important; padding:0 !important; }
-  #itemsTable td { display:table-cell !important; width:auto !important; border:1px solid black !important; padding:8px !important; text-align:center !important; }
-  #itemsTable td::before { display:none !important; }
-  tr,.header,.contact { break-inside:avoid; }
-}
-</style>
-</head>
-<body>
-<section id="homePage" class="page active">
-  <div class="home">
-    <h1>أبو عباس</h1>
-    <div class="home-buttons">
-      <button type="button" onclick="newInvoice();showPage('invoicePage')">فاتورة جديدة</button>
-      <button type="button" onclick="showPage('searchPage')">بحث عن فاتورة</button>
-    </div>
-  </div>
-</section>
-<section id="invoicePage" class="page">
-  <div class="container">
-    <div class="toolbar no-print">
-      <button type="button" onclick="showPage('homePage')">الصفحة الرئيسية</button>
-      <button type="button" onclick="showPage('searchPage')">بحث عن فاتورة</button>
-    </div>
-    <div class="header"><h1>أبو عباس</h1></div>
-    <div class="row">
-      <div class="field"><label for="invoiceNumber">رقم الفاتورة</label><input id="invoiceNumber" inputmode="numeric"></div>
-      <div class="field"><label for="invoiceDate">التاريخ</label><input type="date" id="invoiceDate"></div>
-    </div>
-    <div class="row">
-      <div class="field"><label for="customerName">اسم الزبون</label><input id="customerName"></div>
-      <div class="field"><label for="customerPhone">رقم الهاتف</label><input type="tel" id="customerPhone"></div>
-    </div>
-    <div class="responsible">
-      <div class="row">
-        <div class="field"><label for="responsibleName">اسم المسؤول</label><input id="responsibleName"></div>
-        <div class="field"><label for="responsiblePhone">رقم المسؤول</label><input type="tel" id="responsiblePhone"></div>
-      </div>
-    </div>
-    <h2>تفاصيل الفاتورة</h2>
-    <div class="table-wrap">
-      <table id="itemsTable"><thead><tr>
-        <th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th><th class="no-print">حذف</th>
-      </tr></thead><tbody id="items"></tbody></table>
-    </div>
-    <div class="no-print" style="margin-top:12px"><button type="button" onclick="addItem()">إضافة صنف +</button></div>
-    <div class="total">المجموع: <span id="total">0.000</span> د.ب</div>
-    <label for="notes">ملاحظات</label><textarea id="notes" rows="3"></textarea>
-    <div class="contact"><div>للاستفسار والتواصل</div><div class="phones">39565630 - 33186137</div></div>
-    <div class="actions no-print">
-      <button type="button" onclick="saveInvoice()">حفظ الفاتورة</button>
-      <button type="button" id="saveImageButton" onclick="saveInvoiceImage()">📷 حفظ صورة في التلفون</button>
-      <button type="button" id="shareImageButton" onclick="shareInvoiceImage()">🟢 إرسال على واتساب</button>
-      <button type="button" onclick="window.print()">طباعة / حفظ PDF</button>
-      <button type="button" onclick="newInvoice()">فاتورة جديدة</button>
-    </div>
-    <p class="hint no-print">يمكنك حفظ الفاتورة كصورة أو مشاركتها عبر قائمة المشاركة في هاتفك واختيار واتساب. الفواتير المحفوظة داخل البرنامج تبقى على نفس المتصفح والجهاز.</p>
-  </div>
-</section>
-<section id="searchPage" class="page">
-  <div class="container">
-    <div class="toolbar">
-      <button type="button" onclick="showPage('homePage')">الصفحة الرئيسية</button>
-      <button type="button" onclick="newInvoice();showPage('invoicePage')">فاتورة جديدة</button>
-    </div>
-    <h2>بحث عن فاتورة</h2>
-    <input id="search" placeholder="رقم الفاتورة أو اسم الزبون أو رقم الهاتف" oninput="showInvoices()">
-    <div id="savedInvoices"></div>
-  </div>
-</section>
-<div id="renderStage" aria-hidden="true"></div>
-<div id="previewOverlay" role="dialog" aria-modal="true" aria-label="صورة الفاتورة">
-  <h2>صورة الفاتورة جاهزة</h2>
-  <p id="previewInstructions">اضغط مطوّلاً على الصورة لحفظها في تطبيق الصور، أو اضغط «تنزيل الصورة» لحفظها في الملفات.</p>
-  <img id="previewImage" alt="صورة الفاتورة">
-  <div class="preview-buttons">
-    <button type="button" onclick="downloadPreview()">تنزيل الصورة</button>
-    <button type="button" onclick="closePreview()">إغلاق</button>
-  </div>
-</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
-<script>
-const storageKey = "abu_abbas_invoices";
-const sequenceKey = "abu_abbas_next_number";
-let currentId = null;
-let previewBlobUrl = null;
-let previewFileName = "";
-const el = id => document.getElementById(id);
-
-function showPage(id) {
-  document.querySelectorAll(".page").forEach(page => page.classList.toggle("active", page.id === id));
-  if (id === "searchPage") showInvoices();
-  window.scrollTo(0,0);
-}
-function getInvoices() {
-  try { const data = JSON.parse(localStorage.getItem(storageKey) || "[]"); return Array.isArray(data) ? data : []; }
-  catch { return []; }
-}
-function addItem(item={}) {
-  const row = document.createElement("tr");
-  row.innerHTML = `
-    <td data-label="الصنف"><input class="name" placeholder="الصنف" aria-label="اسم الصنف"></td>
-    <td data-label="الكمية"><input class="qty" type="number" min="0" step="any" inputmode="decimal" aria-label="الكمية"></td>
-    <td data-label="السعر"><input class="price" type="number" min="0" step="0.001" inputmode="decimal" aria-label="السعر بالدينار البحريني"></td>
-    <td data-label="الإجمالي" class="lineTotal">0.000</td>
-    <td data-label="حذف" class="no-print"><button type="button" onclick="removeItem(this)">حذف</button></td>`;
-  el("items").appendChild(row);
-  row.querySelector(".name").value = item.name || "";
-  row.querySelector(".qty").value = item.qty ?? 1;
-  row.querySelector(".price").value = item.price ?? 0;
-  row.querySelectorAll("input").forEach(input => input.addEventListener("input",calculateTotal));
-  calculateTotal();
-}
-function removeItem(button) { button.closest("tr").remove(); calculateTotal(); }
-function calculateTotal() {
-  let total=0;
-  document.querySelectorAll("#items tr").forEach(row => {
-    const qty=Number(row.querySelector(".qty").value)||0;
-    const price=Number(row.querySelector(".price").value)||0;
-    const line=qty*price;
-    row.querySelector(".lineTotal").textContent=line.toFixed(3);
-    total+=line;
-  });
-  el("total").textContent=total.toFixed(3);
-}
-function nextInvoiceNumber() {
-  const numbers=getInvoices().map(i=>Number(i.number)).filter(n=>Number.isSafeInteger(n)&&n>0);
-  const saved=Number(localStorage.getItem(sequenceKey)||1);
-  return Math.max(1,Number.isSafeInteger(saved)?saved:1,...numbers.map(n=>n+1));
-}
-function localDate() {
-  const d=new Date();
-  return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");
-}
-function newInvoice() {
-  currentId=null;
-  el("invoiceNumber").value=String(nextInvoiceNumber());
-  el("invoiceDate").value=localDate();
-  ["customerName","customerPhone","responsibleName","responsiblePhone","notes"].forEach(id=>el(id).value="");
-  el("items").innerHTML="";
-  addItem();
-}
-function collectItems() {
-  return [...document.querySelectorAll("#items tr")].map(row=>({
-    name:row.querySelector(".name").value,
-    qty:Number(row.querySelector(".qty").value)||0,
-    price:Number(row.querySelector(".price").value)||0
-  }));
-}
-function collectInvoice() {
-  return {
-    id:currentId||String(Date.now()), number:el("invoiceNumber").value.trim(),
-    date:el("invoiceDate").value, customer:el("customerName").value,
-    phone:el("customerPhone").value, responsibleName:el("responsibleName").value,
-    responsiblePhone:el("responsiblePhone").value, notes:el("notes").value,
-    items:collectItems()
-  };
-}
-function saveInvoice() {
-  const invoices=getInvoices();
-  const invoice=collectInvoice();
-  if (!invoice.number) { alert("يرجى إدخال رقم الفاتورة"); return; }
-  if (invoices.some(i=>String(i.number)===invoice.number&&String(i.id)!==String(invoice.id))) {
-    alert("رقم الفاتورة مستخدم مسبقاً"); return;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>افلام اون لاين</title>
+<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=edge,chrome=1">
+<meta name="title" content="افلام اون لاين" />
+<meta name="keywords" content="" />
+<meta name="description" content="شاهد أحدث الافلام اون لاين 2026 فقط مباشرة بدون تحميل افلام عربية وهندية وتركية وآسيوية والأجنبية 2026 movie netflix مترجمة عربى ( رعب وإثارة ودراما واكشن وحروب وكوميديا ) بجودة عالية HD DVD 720p BluR..." />
+<meta name="rating" content="General" />
+<meta name="distribution" content="Global" />
+<meta name="classification" content="All" />
+<meta name="revisit-after" content="1 hour" />
+<meta name="Expires" content="0" />
+<meta http-equiv="Content-Language" content="ar-eg" />
+<meta http-equiv="Cache-Control" content="no-cache" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<meta name="language" content="AR" />
+<meta name="creator" content="https://e.cimalight.co "/>
+<meta name="publisher" content="https://e.cimalight.co" />
+<meta name="contact" content="" />
+<meta name="copyright" content="All Rights Reserved cimalight.co" />
+<link rel="apple-touch-icon" sizes="57x57" href="https://e.cimalight.co/favicons/apple-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="https://e.cimalight.co/favicons/apple-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="72x72" href="https://e.cimalight.co/favicons/apple-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="https://e.cimalight.co/favicons/apple-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="114x114" href="https://e.cimalight.co/favicons/apple-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="https://e.cimalight.co/favicons/apple-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="https://e.cimalight.co/favicons/apple-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="https://e.cimalight.co/favicons/apple-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://e.cimalight.co/favicons/apple-icon-180x180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="https://e.cimalight.co/favicons/android-icon-192x192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://e.cimalight.co/favicons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="https://e.cimalight.co/favicons/favicon-96x96.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://e.cimalight.co/favicons/favicon-16x16.png">
+<link rel="manifest" href="https://e.cimalight.co/favicons/manifest.json">
+<meta name="msapplication-TileColor" content="#ffffff">
+<meta name="msapplication-TileImage" content="https://e.cimalight.co/favicons/ms-icon-144x144.png">
+<meta name="theme-color" content="#ffffff">
+<link rel="alternate" type="application/rss+xml" title="افلام اون لاين" href="https://e.cimalight.co/rss.php?c=9" />
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "WebSite",
+  "url": "https://e.cimalight.co",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://e.cimalight.co/search.php?keywords={search_term_string}",
+    "query-input": "required name=search_term_string"
   }
-  const idx=invoices.findIndex(i=>String(i.id)===String(invoice.id));
-  if(idx>=0) invoices[idx]=invoice;
-  else invoices.unshift(invoice);
-  try {
-    localStorage.setItem(storageKey,JSON.stringify(invoices));
-    const number=Number(invoice.number);
-    if(Number.isSafeInteger(number)&&number>0) localStorage.setItem(sequenceKey,String(Math.max(nextInvoiceNumber(),number+1)));
-    currentId=invoice.id;
-    alert("تم حفظ الفاتورة بنجاح");
-  } catch { alert("تعذر حفظ الفاتورة. تأكد أن المتصفح يسمح بالتخزين."); }
 }
-function showInvoices() {
-  const search=el("search").value.trim().toLowerCase();
-  const container=el("savedInvoices"); container.replaceChildren();
-  const invoices=getInvoices().filter(i=>[i.number,i.customer,i.phone].some(v=>String(v??"").toLowerCase().includes(search)));
-  if(!invoices.length) { const p=document.createElement("p");p.textContent="لا توجد فواتير مطابقة.";container.appendChild(p);return; }
-  invoices.forEach(i=>{
-    const div=document.createElement("div"); div.className="saved-item";
-    const title=document.createElement("span"); title.textContent=i.number+" - "+(i.customer||"بدون اسم");
-    const edit=document.createElement("button");edit.type="button";edit.textContent="فتح / تعديل";edit.onclick=()=>loadInvoice(i.id);
-    const remove=document.createElement("button");remove.type="button";remove.textContent="حذف";remove.onclick=()=>deleteInvoice(i.id);
-    div.append(title,edit,remove);container.appendChild(div);
-  });
-}
-function loadInvoice(id) {
-  const i=getInvoices().find(x=>String(x.id)===String(id));if(!i)return;
-  currentId=i.id;
-  const fields={invoiceNumber:i.number,invoiceDate:i.date,customerName:i.customer,customerPhone:i.phone,responsibleName:i.responsibleName,responsiblePhone:i.responsiblePhone,notes:i.notes};
-  Object.entries(fields).forEach(([id,value])=>el(id).value=value??"");
-  el("items").innerHTML="";(i.items||[]).forEach(item=>addItem(item));calculateTotal();showPage("invoicePage");
-}
-function deleteInvoice(id) {
-  if(!confirm("هل تريد حذف هذه الفاتورة؟"))return;
-  const invoices=getInvoices().filter(i=>String(i.id)!==String(id));
-  try {localStorage.setItem(storageKey,JSON.stringify(invoices));if(String(currentId)===String(id))currentId=null;showInvoices();}
-  catch {alert("تعذر حذف الفاتورة");}
-}
+</script>
 
-/* إنشاء نسخة مرتبة من الفاتورة خاصة بالصورة، بدون الأزرار أو حقول الإدخال */
-function buildExportCard(invoice) {
-  const card=document.createElement("div");card.className="export-card";
-  card.innerHTML=`
-    <h1 class="export-title">أبو عباس</h1>
-    <p class="export-subtitle">فاتورة</p>
-    <div class="export-meta">
-      <div class="export-box"><span class="export-label">رقم الفاتورة</span><span class="export-value" id="eNumber"></span></div>
-      <div class="export-box"><span class="export-label">التاريخ</span><span class="export-value" id="eDate"></span></div>
-      <div class="export-box"><span class="export-label">اسم الزبون</span><span class="export-value" id="eCustomer"></span></div>
-      <div class="export-box"><span class="export-label">رقم هاتف الزبون</span><span class="export-value" id="ePhone"></span></div>
-      <div class="export-box"><span class="export-label">اسم المسؤول</span><span class="export-value" id="eResponsible"></span></div>
-      <div class="export-box"><span class="export-label">رقم المسؤول</span><span class="export-value" id="eResponsiblePhone"></span></div>
+<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@type": "Organization",
+		"name": "سيما لايت",
+		"url": "https://e.cimalight.co",
+		"logo": "https://e.cimalight.co/uploads/custom-logo.png",
+		"sameAs": "https://www.facebook.com/cimalayt"
+	}
+</script>
+
+<!--[if lt IE 9]>
+<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<link rel="stylesheet" href="https://e.cimalight.co/templates/echo/css/bootstrap.min.css">
+<!--[if lt IE 9]>
+<script src="//css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" media="screen" href="https://e.cimalight.co/templates/echo/css/jasny-bootstrap.min.css">
+<link rel="stylesheet" type="text/css" media="screen" href="https://e.cimalight.co/templates/echo/css/echo.css">
+<link rel="stylesheet" type="text/css" media="screen" href="https://e.cimalight.co/templates/echo/css/animate.min.css">
+<link rel="stylesheet" type="text/css" media="screen" href="https://e.cimalight.co/templates/echo/css/bootstrap.min.rtl.css">
+<link rel="stylesheet" type="text/css" media="screen" href="https://e.cimalight.co/templates/echo/css/echo.rtl.css">
+<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Roboto:400,300,500,700|Noticia+Text:400,400italic,700">
+<link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" media="screen" href="https://e.cimalight.co/templates/echo/css/custom2.css?v=1.1">
+<script type="text/javascript">
+var MELODYURL = "https://e.cimalight.co";
+var MELODYURL2 = "https://e.cimalight.co";
+var TemplateP = "https://e.cimalight.co/templates/echo";
+var _LOGGEDIN_ = false;
+ 
+</script>
+
+<script type="text/javascript">
+ var pm_lang = {
+	lights_off: "إغلاق الإضاءة",
+	lights_on: "Lights on",
+	validate_name: "Please enter a name",
+	validate_username: "Please enter a username",
+	validate_pass: "Please provide a password",
+	validate_captcha: "Please enter the validation code",
+	validate_email: "Please enter a valid email address",
+	validate_agree: "Please accept our policy",
+	validate_name_long: "Your name must consist of at least 2 characters",
+	validate_username_long: "Your username must consist of at least 2 characters",
+	validate_pass_long: "Your password must be at least 5 characters long",
+	validate_confirm_pass_long: "Please enter the same password as above",
+	choose_category: "الرجاء اختيار تصنيف",
+	validate_select_file: "لم يتم إختيار اى ملف للرفع",
+	validate_video_title: "Please enter a title for this video",
+	please_wait: "Loading...",
+	// upload video page
+	swfupload_status_uploaded: "Uploaded",
+	swfupload_status_pending: "Continue with the rest of the form.",
+	swfupload_status_queued: "Queued",
+	swfupload_status_uploading: "Uploading...",
+	swfupload_file: "File",
+	swfupload_btn_select: "Select",
+	swfupload_btn_cancel: "Cancel",
+	swfupload_status_error: "Error",
+	swfupload_error_oversize: "Size of the selected file(s) is greater than allowed limit",
+	swfupload_friendly_maxsize: "",
+	upload_errmsg2: "نوع الملف غير مسموح.",
+	// playlist
+	playlist_delete_confirm: "Are you sure you want to permanently delete this playlist?\n\nClick 'Cancel' to stop, 'OK' to delete.",
+	playlist_delete_item_confirm: "You are about to remove this video from your playlist.\n\nClick 'Cancel' to stop, 'OK' to delete.",
+	show_more: "Show more",
+	show_less: "Show less",
+	delete_video_confirmation: "Are you sure you want to delete this video?",
+	browse_all: "Browse All"
+ }
+</script>
+
+
+<style type="text/css"></style>
+</head>
+<body class="video-category catid-9 page-1">
+
+<nav id="myNavmenu" class="navmenu navmenu-default navmenu-fixed-left offcanvas" role="navigation">
+	<div class="navslide-wrap">
+		<ul class="list-unstyled">
+			<li class=""><a href="https://e.cimalight.co/main31"><i class="mico mico-home"></i>الصفحة الرئيسية</a></li>
+			<li class=""><a href="https://e.cimalight.co/all-series.php"><i class="mico mico-live_tv"></i>أحدث المسلسلات</a></li>
+			<li class=""><a href="https://e.cimalight.co/episodes.php"><i class="mico mico-video_collection"></i>أحدث الحلقات</a></li>
+			<li class=""><a href="https://e.cimalight.co/movies.php"><i class="mico mico-movie"></i>أحدث الأفلام</a></li>			
+		</ul>
+		<div class="navslide-divider"></div>
+		
+		<div class="navslide-header"><a href="https://e.cimalight.co/category.php">Categories</a></div>
+		<ul class="list-unstyled">
+			<li><a href="https://e.cimalight.co/topvideos.php">الاكثر مشاهدة</a></li>
+			<li><a href="https://e.cimalight.co/newvideos.php">الجديد</a></li>
+			<li><a href="https://e.cimalight.co/category.php?cat=ramadan-2026">مسلسلات رمضان 2026</a></li>
+			<li class=""><a href="https://e.cimalight.co/category.php?cat=masrahiyat" class="">مسرحيات كاملة</a></li>
+<li class="dropdown-submenu"><a href="https://e.cimalight.co/category.php?cat=online-movies3" class="dropdown-submenu">افلام اون لاين</a>
+<ul class='dropdown-menu'>
+	<li class=""><a href="https://e.cimalight.co/category.php?cat=arabic-movies10" class="">أفلام عربى اون لاين</a>	</li>
+	<li class=""><a href="https://e.cimalight.co/category.php?cat=english-movies2" class="">افلام اجنبى مترجم</a>	</li>
+	<li class=""><a href="https://e.cimalight.co/category.php?cat=indian-movies1" class="">افلام هندي</a>	</li>
+	<li class=""><a href="https://e.cimalight.co/category.php?cat=turkish-movies" class="">افلام تركية</a>	</li>
+	<li class=""><a href="https://e.cimalight.co/category.php?cat=asian-movies" class="">افلام اسيوية</a>	</li>
+	<li class=""><a href="https://e.cimalight.co/category.php?cat=anime-movies1" class="">افلام انمي</a>	</li>
+</ul>
+</li>
+<li class=""><a href="https://e.cimalight.co/category.php?cat=indian-series" class="">مسلسلات هندية 2020</a></li>
+<li class="dropdown-submenu"><a href="https://e.cimalight.co/category.php?cat=cimalight4" class="dropdown-submenu">مسلسلات وبرامج سيما لايت</a>
+<ul class='dropdown-menu'>
+	<li class=""><a href="https://e.cimalight.co/category.php?cat=koryan-series" class="">مسلسلات كورية</a>	</li>
+	<li class=""><a href="https://e.cimalight.co/category.php?cat=arabic-series18" class="">مسلسلات عربية 2026 اون لاين</a>	</li>
+	<li class=""><a href="https://e.cimalight.co/category.php?cat=asian-series" class="">مسلسلات اسيوية</a>	</li>
+	<li class=""><a href="https://e.cimalight.co/category.php?cat=turkish-series21" class="">مسلسلات تركية 2026 مترجمة ومدبلجة</a>	</li>
+	<li class=""><a href="https://e.cimalight.co/category.php?cat=hindi-series" class="">مسلسلات هندية</a>	</li>
+	<li class=""><a href="https://e.cimalight.co/category.php?cat=english-series7" class="">مسلسلات أجنبية</a>	</li>
+	<li class=""><a href="https://e.cimalight.co/category.php?cat=tv-shows" class="">برامج تلفزيون</a>	</li>
+	<li class=""><a href="https://e.cimalight.co/category.php?cat=anime2" class="">انمى وكرتون</a>	</li>
+	<li class=""><a href="https://e.cimalight.co/category.php?cat=ramadan-series" class="">مسلسلات رمضان</a>	</li>
+</ul>
+</li>
+<li class=""><a href="https://e.cimalight.co/category.php?cat=tv-channels" class="">قنوات فضائية</a></li>
+<li class=""><a href="https://e.cimalight.co/category.php?cat=modblj-series" class="">مسلسلات مدبلجة</a></li>
+<li class=""><a href="https://e.cimalight.co/category.php?cat=arabic-serie" class="">مسلسلات مصرية</a></li>
+<li class=""><a href="https://e.cimalight.co/category.php?cat=download-full-series14" class="">تحميل مسلسلات كاملة برابط واحد</a></li>
+
+		</ul>
+		<div class="navslide-divider"></div>
+
+		
+
+
+	</div>
+</nav>
+
+<div class="container-fluid no-padding">
+<header class="pm-top-head header-bg">
+	<div class="row">
+		<div class="col-xs-7 col-sm-4 col-md-4">
+			<a href="#" data-toggle="offcanvas" data-target="#myNavmenu" data-canvas="body" id="navslide-toggle"><span>Show menu</span></a>
+			<div class="header-logo">
+							<a href="https://e.cimalight.co/main31" rel="home"><img src="//e.cimalight.co/uploads/custom-logo.png" alt="سيما لايت" title="سيما لايت" border="0" /></a>
+						</div>
+		</div>
+		<div class="hidden-xs col-sm-4 col-md-4" id="pm-top-search">
+						<form action="https://e.cimalight.co/search.php" method="get" id="search" class="pm-search-form" name="search" onSubmit="return validateSearch('true');">
+				<div class="input-group">
+					<input class="form-control" id="pm-search" size="16" name="keywords" type="text" placeholder="بحث..." x-webkit-speech="x-webkit-speech" onwebkitspeechchange="this.form.submit();" onblur="fill();" autocomplete="off">
+					<input class="form-control" id="pm-video-id" size="16" name="video-id" type="hidden">
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
+					</span>
+				</div><!-- /input-group -->
+			</form>
+			<div class="pm-search-suggestions hide-me">
+				<ul class="pm-search-suggestions-list list-unstyled"></ul>
+			</div>
+					</div>
+
+				<div class="col-xs-5 col-sm-4 col-md-4">
+			<ul class="list-inline navbar-pmuser">
+				<li class="hidden-sm hidden-md hidden-lg"><a href="#" id="pm-top-mobile-search-show" class="" title="بحث"><i class="mico mico-search"></i></a></li>
+							</ul>
+		</div>
+			</div>
+        <!--.row-->
+</header>
+
+
+	<div class="modal" id="modal-login-form">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<h4 class="modal-title">Sign in</h4>
+			</div>
+			<div class="modal-body">
+				
+				<form name="login_form" id="login-form" method="post" action="https://e.cimalight.co/login.php">
+	<div class="form-group">
+		<label for="username">Your username or email</label>
+		<input type="text" class="form-control" name="username" value="" placeholder="Your username or email">
+	</div>
+	<div class="form-group">
+		<label for="pass">كلمة المرور</label>
+		<input type="password" class="form-control" id="pass" name="pass" maxlength="32" autocomplete="off" placeholder="كلمة المرور">
+	</div>
+	<div class="form-group">
+		<button type="submit" name="Login" value="تسجيل دخول" class="btn btn-success btn-with-loader" data-loading-text="Signing in...">تسجيل دخول</button> 
+		<small><a href="https://e.cimalight.co/login.php?do=forgot_pass">نسيت كلمة السر؟</a></small>
+	</div>
+</form>							</div>
+		</div>
+	</div>
+</div>	
+<a id="top"></a>
+
+<div class="mastcontent-wrap">
+
+
+<div id="category-header" class="container-fluid fluid pm-new-videos-page">
+	<div class="pm-category-highlight animated fadeInLeft">
+		<h1>افلام اون لاين</h1>
+	</div>
+		<div class="row pm-category-header-subcats">
+		<div class="col-md-12">
+			<div class="pm-category-subcats">
+				<h5>تصنيفات مشابهة</h5>
+ 				<ul class="list-inline">
+					<li><a href="https://e.cimalight.co/category.php?cat=arabic-movies10">أفلام عربى اون لاين</a></li><li><a href="https://e.cimalight.co/category.php?cat=english-movies2">افلام اجنبى مترجم</a></li><li><a href="https://e.cimalight.co/category.php?cat=indian-movies1">افلام هندي</a></li><li><a href="https://e.cimalight.co/category.php?cat=turkish-movies">افلام تركية</a></li><li><a href="https://e.cimalight.co/category.php?cat=asian-movies">افلام اسيوية</a></li><li><a href="https://e.cimalight.co/category.php?cat=anime-movies1">افلام انمي</a></li> 
+				</ul>
+			</div>
+		</div>
+	</div>
+	</div>
+<div id="content">
+	<div class="container-fluid">
+		<div class="row">
+		<div class="col-md-12">
+
+					<div class="pm-section-head">
+				<div class="btn-group btn-group-sort">
+					<a class="btn btn-default" id="show-grid" rel="tooltip" title="Grid"><i class="fa fa-th"></i></a>
+					<a class="btn btn-default" id="show-list" rel="tooltip" title="List"><i class="fa fa-th-list"></i></a>
+					<a href="#" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-target="#">
+					فرز 					<span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu">
+												<li >
+						<a href="https://e.cimalight.co/category.php?cat=online-movies3&page=1&sortby=date" rel="nofollow">تاريخ</a></li>
+						<li >
+						<a href="https://e.cimalight.co/category.php?cat=online-movies3&page=1&sortby=views" rel="nofollow">عدد المشاهدات</a></li>
+						<li >
+						<a href="https://e.cimalight.co/category.php?cat=online-movies3&page=1&sortby=rating" rel="nofollow">تقييم</a></li>
+						<li >
+						<a href="https://e.cimalight.co/category.php?cat=online-movies3&page=1&sortby=title" rel="nofollow">Title</a></li>
+											</ul>
+				</div>
+			</div>
+			<div class="clearfix"></div>
+
+							<div class="pm-category-description">
+                                   
+				<p style="direction: rtl;">شاهد أحدث الافلام اون لاين 2026 فقط مباشرة بدون تحميل افلام عربية وهندية وتركية وآسيوية والأجنبية 2026 movie netflix مترجمة عربى ( رعب وإثارة ودراما واكشن وحروب وكوميديا ) بجودة عالية HD DVD 720p BluRay يوتيوب Dailymotion.</p>
+				</div>
+			
+			<ul class="row pm-ul-browse-videos list-unstyled" id="pm-grid">
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:56:13</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=faa36001b" title="فيلم Bloodstained Ivory 2025 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/faa36001b-1.jpg" alt="فيلم Bloodstained Ivory 2025 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=faa36001b" title="فيلم Bloodstained Ivory 2025 مترجم" class="ellipsis">فيلم Bloodstained Ivory 2025 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:41:13</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=e987ac726" title="فيلم A Dog’s Perfect Christmas 2026 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/e987ac726-1.jpg" alt="فيلم A Dog’s Perfect Christmas 2026 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=e987ac726" title="فيلم A Dog’s Perfect Christmas 2026 مترجم" class="ellipsis">فيلم A Dog’s Perfect Christmas 2026 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:32:17</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=3dd28cb1c" title="فيلم April X 2025 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/3dd28cb1c-1.jpg" alt="فيلم April X 2025 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=3dd28cb1c" title="فيلم April X 2025 مترجم" class="ellipsis">فيلم April X 2025 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:59:05</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=1be4b713c" title="فيلم My Best Friend 2026 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/1be4b713c-1.jpg" alt="فيلم My Best Friend 2026 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=1be4b713c" title="فيلم My Best Friend 2026 مترجم" class="ellipsis">فيلم My Best Friend 2026 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:30:56</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=0eb10917e" title="فيلم Scorpion 2026 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/0eb10917e-1.jpg" alt="فيلم Scorpion 2026 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=0eb10917e" title="فيلم Scorpion 2026 مترجم" class="ellipsis">فيلم Scorpion 2026 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:41:58</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=1c093c8ab" title="فيلم Charlie Harper 2025 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/1c093c8ab-1.jpg" alt="فيلم Charlie Harper 2025 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=1c093c8ab" title="فيلم Charlie Harper 2025 مترجم" class="ellipsis">فيلم Charlie Harper 2025 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">2:36:21</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=cfa78d679" title="فيلم Baththa 2026 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/57043aafd-1.jpg" alt="فيلم Baththa 2026 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=cfa78d679" title="فيلم Baththa 2026 مترجم" class="ellipsis">فيلم Baththa 2026 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:46:03</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=b157a8926" title="فيلم The Living Tree 2026 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/b157a8926-1.jpg" alt="فيلم The Living Tree 2026 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=b157a8926" title="فيلم The Living Tree 2026 مترجم" class="ellipsis">فيلم The Living Tree 2026 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:25:24</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=2960f584e" title="فيلم The Holiday Spark 2026 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/2960f584e-1.jpg" alt="فيلم The Holiday Spark 2026 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=2960f584e" title="فيلم The Holiday Spark 2026 مترجم" class="ellipsis">فيلم The Holiday Spark 2026 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:20:06</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=2db32a224" title="فيلم The Canvas 2026 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/2db32a224-1.jpg" alt="فيلم The Canvas 2026 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=2db32a224" title="فيلم The Canvas 2026 مترجم" class="ellipsis">فيلم The Canvas 2026 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:22:28</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=38d74074a" title="فيلم موسكو كايرو 2026 كامل">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 HDCAM
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/38d74074a-1.jpg" alt="فيلم موسكو كايرو 2026 كامل" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=38d74074a" title="فيلم موسكو كايرو 2026 كامل" class="ellipsis">فيلم موسكو كايرو 2026 كامل</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">29:04</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=65ddf9ab8" title="فيلم A Story of Derry 2026 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/65ddf9ab8-1.jpg" alt="فيلم A Story of Derry 2026 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=65ddf9ab8" title="فيلم A Story of Derry 2026 مترجم" class="ellipsis">فيلم A Story of Derry 2026 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:26:54</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=86059a48a" title="فيلم نصيب 2026 كامل">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 HDCAM
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/86059a48a-1.jpg" alt="فيلم نصيب 2026 كامل" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=86059a48a" title="فيلم نصيب 2026 كامل" class="ellipsis">فيلم نصيب 2026 كامل</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">2:18:17</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=bf54c96da" title="فيلم Awarapan 2 2026 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/bf54c96da-1.jpg" alt="فيلم Awarapan 2 2026 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=bf54c96da" title="فيلم Awarapan 2 2026 مترجم" class="ellipsis">فيلم Awarapan 2 2026 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:09:40</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=d6b90df70" title="فيلم The Hunted 2026 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 HDCAM
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/d6b90df70-1.jpg" alt="فيلم The Hunted 2026 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=d6b90df70" title="فيلم The Hunted 2026 مترجم" class="ellipsis">فيلم The Hunted 2026 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">2:51:38</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=f458302b9" title="فيلم Les miserables 2026 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 HDCAM
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/f458302b9-1.jpg" alt="فيلم Les miserables 2026 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=f458302b9" title="فيلم Les miserables 2026 مترجم" class="ellipsis">فيلم Les miserables 2026 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:38:05</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=ce131ce6f" title="فيلم Apocalypse Z: New World 2026 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/ce131ce6f-1.jpg" alt="فيلم Apocalypse Z: New World 2026 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=ce131ce6f" title="فيلم Apocalypse Z: New World 2026 مترجم" class="ellipsis">فيلم Apocalypse Z: New World 2026 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:29:03</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=dbc00c6f6" title="فيلم The Birthday Gift 2026 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/0eb76d344-1.jpg" alt="فيلم The Birthday Gift 2026 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=dbc00c6f6" title="فيلم The Birthday Gift 2026 مترجم" class="ellipsis">فيلم The Birthday Gift 2026 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:46:21</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=fe8c0407a" title="فيلم Collision Course 2026 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/74681500b-1.jpg" alt="فيلم Collision Course 2026 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=fe8c0407a" title="فيلم Collision Course 2026 مترجم" class="ellipsis">فيلم Collision Course 2026 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:47:19</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=45ce275ec" title="فيلم You, Me, Us 2026 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/45ce275ec-1.jpg" alt="فيلم You, Me, Us 2026 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=45ce275ec" title="فيلم You, Me, Us 2026 مترجم" class="ellipsis">فيلم You, Me, Us 2026 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">34:41</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=3e482ef5a" title="فيلم اخر رقصة في كيبور 2026 كامل">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/3e482ef5a-1.jpg" alt="فيلم اخر رقصة في كيبور 2026 كامل" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=3e482ef5a" title="فيلم اخر رقصة في كيبور 2026 كامل" class="ellipsis">فيلم اخر رقصة في كيبور 2026 كامل</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:35:59</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=33768300c" title="فيلم The Perfect Lie 2026 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 BluRay
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/33768300c-1.jpg" alt="فيلم The Perfect Lie 2026 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=33768300c" title="فيلم The Perfect Lie 2026 مترجم" class="ellipsis">فيلم The Perfect Lie 2026 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:42:42</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=d548dff29" title="فيلم Drive – The Pretenders 2026 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/f6dd6f53a-1.jpg" alt="فيلم Drive – The Pretenders 2026 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=d548dff29" title="فيلم Drive – The Pretenders 2026 مترجم" class="ellipsis">فيلم Drive – The Pretenders 2026 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:31:26</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=592e7fb4f" title="فيلم Ali G: Who Iz I 2026 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/9aa502049-1.jpg" alt="فيلم Ali G: Who Iz I 2026 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=592e7fb4f" title="فيلم Ali G: Who Iz I 2026 مترجم" class="ellipsis">فيلم Ali G: Who Iz I 2026 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:38:23</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=339455636" title="فيلم The Super Mario Galaxy Movie 2026 مدبلج">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 مدبلج مصري
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/339455636-1.jpg" alt="فيلم The Super Mario Galaxy Movie 2026 مدبلج" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=339455636" title="فيلم The Super Mario Galaxy Movie 2026 مدبلج" class="ellipsis">فيلم The Super Mario Galaxy Movie 2026 مدبلج</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:49:40</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=8ccae15a5" title="فيلم Forgotten Island 2026 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/8ccae15a5-1.jpg" alt="فيلم Forgotten Island 2026 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=8ccae15a5" title="فيلم Forgotten Island 2026 مترجم" class="ellipsis">فيلم Forgotten Island 2026 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:38:48</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=9134fa564" title="فيلم The Stunt Driver 2026 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/33c9cdcd9-1.jpg" alt="فيلم The Stunt Driver 2026 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=9134fa564" title="فيلم The Stunt Driver 2026 مترجم" class="ellipsis">فيلم The Stunt Driver 2026 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">1:24:36</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=7c81130bc" title="فيلم The Teenage Vampire 2026 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/7c81130bc-1.jpg" alt="فيلم The Teenage Vampire 2026 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=7c81130bc" title="فيلم The Teenage Vampire 2026 مترجم" class="ellipsis">فيلم The Teenage Vampire 2026 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">2:12:26</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=79d43cd5b" title="فيلم Sense and Sensibility 2026 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/79d43cd5b-1.jpg" alt="فيلم Sense and Sensibility 2026 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=79d43cd5b" title="فيلم Sense and Sensibility 2026 مترجم" class="ellipsis">فيلم Sense and Sensibility 2026 مترجم</a></h3>
+	</div>
+</div>				</li>
+							<li class="col-xs-6 col-sm-4 col-md-3">
+				<div class="thumbnail">
+	<div class="pm-video-thumb" style="overflow: unset!important">
+		<span class="pm-label-duration">2:05:02</span>
+		
+								<a class="pm-watch-later-add btn btn-xs btn-default hidden-xs" rel="tooltip" data-placement="left" title="Watch Later" data-toggle="modal" data-backdrop="true" data-keyboard="true" href="#modal-login-form"><i class="fa fa-clock-o"></i></a>
+							<a href="https://e.cimalight.co/watch.php?vid=b3897ef2e" title="فيلم Ever After 2025 مترجم">
+									<div class="pm-video-labels">
+												<div class="ribon">
+					<span class="hot" style="background:#ff0000;">
+						 WEB-DL
+					</span>
+				</div>
+				<style>.ribon { position: absolute; left: -7px; top: -7px; z-index: 1; overflow: hidden; width: 75px; height: 75px }.hot .after, .hot .before { position: absolute; z-index: -1 } .hot { color: #fff; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); width: 111px; display: block; background: #ff4136; box-shadow: 0 3px 10px -5px #000; position: absolute; top: 19px; left: -30px; font-weight: 700; line-height: 20px } .hot .after { left: 9px; top: 100% } .hot .before { right: 5px; top: 20px }</style>
+							</div>
+						<img src="https://e.cimalight.co/uploads/thumbs/b3897ef2e-1.jpg" alt="فيلم Ever After 2025 مترجم" style="width:240px;height:136px;object-fit:cover;object-position:25% 55%;border-radius: 5px;" class="img-responsive lazy_load">
+		<span class="overlay"></span>
+		</a>
+	</div>
+
+	<div class="caption">
+		<h3><a href="https://e.cimalight.co/watch.php?vid=b3897ef2e" title="فيلم Ever After 2025 مترجم" class="ellipsis">فيلم Ever After 2025 مترجم</a></h3>
+	</div>
+</div>				</li>
+						</ul>
+			<div class="clearfix"></div>
+
+							<div class="row">
+	<div class="col-md-12 text-center">
+	<ul class="pagination pagination-sm pagination-arrows">
+				<li class="disabled">
+			<a href="#" onclick="return false;">&laquo;</a>
+		</li>
+				<li class="active">
+			<a href="#" onclick="return false;">1</a>
+		</li>
+				<li class="">
+			<a href="category.php?cat=online-movies3&page=2&order=DESC">2</a>
+		</li>
+				<li class="">
+			<a href="category.php?cat=online-movies3&page=3&order=DESC">3</a>
+		</li>
+				<li class="">
+			<a href="category.php?cat=online-movies3&page=4&order=DESC">4</a>
+		</li>
+				<li class="">
+			<a href="category.php?cat=online-movies3&page=5&order=DESC">5</a>
+		</li>
+				<li class="disabled">
+			<a href="#" onclick="return false;">...</a>
+		</li>
+				<li class="">
+			<a href="category.php?cat=online-movies3&page=72&order=DESC">72</a>
+		</li>
+				<li class="">
+			<a href="category.php?cat=online-movies3&page=73&order=DESC">73</a>
+		</li>
+				<li class="">
+			<a href="category.php?cat=online-movies3&page=2&order=DESC">&raquo;</a>
+		</li>
+			</ul>
+	</div>
+</div>			
+		
+
+		</div><!-- #content -->
+		</div><!-- .row -->
+	</div><!-- .container -->
+</div> <!--.mastcontent-wrap-->
+
+
+
+
+</div><!--content-->
+</div><!--.container-fluid no-padding-->
+
+
+<div class="container-fluid container-footer">
+		<footer>
+		
+                                
+    <div class="row">
+        <div class="col-md-12">
+            <ul class="listCat">
+                <a title="cima" href="https://e.cimalight.co/main31">cima</a>
+                <a title="سيما" href="https://e.cimalight.co/main31">سيما</a>
+                <a title="سيما لايت" href="https://e.cimalight.co/main31">سيما لايت</a>
+                <a title="مسلسلات رمضان 2026" href="https://e.cimalight.co/category.php?cat=ramadan-2026">مسلسلات رمضان 2026</a>
+                                                                <a href="https://e.cimalight.co/category.php?cat=koryan-series">
+                                مسلسلات كورية
+                            </a>
+                                                                                    <a href="https://e.cimalight.co/category.php?cat=masrahiyat">
+                                مسرحيات كاملة
+                            </a>
+                                                                                    <a href="https://e.cimalight.co/category.php?cat=arabic-movies10">
+                                أفلام عربى اون لاين
+                            </a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <a href="https://e.cimalight.co/category.php?cat=arabic-series18">
+                                مسلسلات عربية 2026 اون لاين
+                            </a>
+                                                                                    <a href="https://e.cimalight.co/category.php?cat=online-movies3">
+                                افلام اون لاين
+                            </a>
+                                                                                    <a href="https://e.cimalight.co/category.php?cat=english-movies2">
+                                افلام اجنبى مترجم
+                            </a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                            <a href="https://e.cimalight.co/category.php?cat=asian-series">
+                                مسلسلات اسيوية
+                            </a>
+                                                                                    <a href="https://e.cimalight.co/category.php?cat=indian-series">
+                                مسلسلات هندية 2020
+                            </a>
+                                                                                    <a href="https://e.cimalight.co/category.php?cat=indian-movies1">
+                                افلام هندي
+                            </a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                            <a href="https://e.cimalight.co/category.php?cat=turkish-series21">
+                                مسلسلات تركية 2026 مترجمة...
+                            </a>
+                                                                                    <a href="https://e.cimalight.co/category.php?cat=cimalight4">
+                                مسلسلات وبرامج سيما لايت
+                            </a>
+                                                                                                                                                                                                                                                                                                            <a href="https://e.cimalight.co/category.php?cat=turkish-movies">
+                                افلام تركية
+                            </a>
+                                                                                                                                                                                                                                    <a href="https://e.cimalight.co/category.php?cat=hindi-series">
+                                مسلسلات هندية
+                            </a>
+                                                                                    <a href="https://e.cimalight.co/category.php?cat=tv-channels">
+                                قنوات فضائية
+                            </a>
+                                                                                                                                                                                                                                                                        <a href="https://e.cimalight.co/category.php?cat=asian-movies">
+                                افلام اسيوية
+                            </a>
+                                                                                                                                                                                                                                                                        <a href="https://e.cimalight.co/category.php?cat=english-series7">
+                                مسلسلات أجنبية
+                            </a>
+                                                                                                                        <a href="https://e.cimalight.co/category.php?cat=modblj-series">
+                                مسلسلات مدبلجة
+                            </a>
+                                                                                                                                                                                                                                                                        <a href="https://e.cimalight.co/category.php?cat=anime-movies1">
+                                افلام انمي
+                            </a>
+                                                                                                                                                                                                <a href="https://e.cimalight.co/category.php?cat=tv-shows">
+                                برامج تلفزيون
+                            </a>
+                                                                                                                        <a href="https://e.cimalight.co/category.php?cat=arabic-serie">
+                                مسلسلات مصرية
+                            </a>
+                                                                                                                                                                                                                                                                                                                                                                                    <a href="https://e.cimalight.co/category.php?cat=anime2">
+                                انمى وكرتون
+                            </a>
+                                                                                                                                                                                                                                                                                                                                                                                                                        <a href="https://e.cimalight.co/category.php?cat=download-full-series14">
+                                تحميل مسلسلات كاملة برابط واحد
+                            </a>
+                                                                                                                                                                                                                                                                        <a href="https://e.cimalight.co/category.php?cat=ramadan-series">
+                                مسلسلات رمضان
+                            </a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </ul>
+        </div>
     </div>
-    <div class="export-section">تفاصيل الفاتورة</div>
-    <div id="eItems"></div>
-    <div class="export-total" id="eTotal"></div>
-    <div class="export-section" id="eNotesTitle">ملاحظات</div>
-    <p class="export-notes" id="eNotes"></p>
-    <div class="export-contact">للاستفسار والتواصل<b>39565630 - 33186137</b></div>`;
-  const set=(id,value)=>card.querySelector("#"+id).textContent=String(value??"").trim()||"—";
-  set("eNumber",invoice.number);set("eDate",invoice.date);set("eCustomer",invoice.customer);
-  set("ePhone",invoice.phone);set("eResponsible",invoice.responsibleName);set("eResponsiblePhone",invoice.responsiblePhone);
-  const list=card.querySelector("#eItems");
-  (invoice.items||[]).forEach((i,n)=>{
-    const row=document.createElement("div");row.className="export-product";
-    const title=document.createElement("div");title.className="export-product-name";title.textContent=(n+1)+". "+(i.name||"صنف بدون اسم");
-    const details=document.createElement("div");details.className="export-product-details";
-    [["الكمية",i.qty],["السعر",Number(i.price||0).toFixed(3)],["الإجمالي",((Number(i.qty)||0)*(Number(i.price)||0)).toFixed(3)]].forEach(([label,value])=>{
-      const box=document.createElement("div");const small=document.createElement("span");small.textContent=label;
-      const b=document.createElement("b");b.textContent=String(value);box.append(small,b);details.appendChild(box);
-    });
-    row.append(title,details);list.appendChild(row);
+                                
+		<div class="row">
+			<div class="col-xs-12 col-sm-12 col-md-12">
+                            <p></p>
+                       <p> كافة الحقوق محفوظة لــ موقع سيما لايت &copy; 2026 . </p>
+			</div>
+		</div>
+	</footer>
+</div>
+
+
+
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+
+
+
+<script src="https://e.cimalight.co/templates/echo/js/slick.min.js"></script>
+
+
+<script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://e.cimalight.co/templates/echo/js/theme.js"></script>
+<script type="text/javascript">
+
+// $(window).scroll(function() {
+//   if ($(this).scrollTop() > 1){  
+//     $('header').addClass("sticky-head");
+//   }
+//   else {
+//     $('header').removeClass("sticky-head");
+//   }
+// });
+
+$(document).ready(function() { 
+  $(function() {
+	$('.ripple').on('click', function (event) {
+	  //event.preventDefault();
+	  
+	  var $div = $('<div/>'),
+		  btnOffset = $(this).offset(),
+			xPos = event.pageX - btnOffset.left,
+			yPos = event.pageY - btnOffset.top;
+	  
+	  $div.addClass('ripple-effect');
+	  var $ripple = $(".ripple-effect");
+	  
+	  $ripple.css("height", $(this).height());
+	  $ripple.css("width", $(this).height());
+	  $div
+		.css({
+		  top: yPos - ($ripple.height()/2),
+		  left: xPos - ($ripple.width()/2),
+		  background: $(this).data("ripple-color")
+		}) 
+		.appendTo($(this));
+
+	  window.setTimeout(function(){
+		$div.remove();
+	  }, 2000);
+	});
   });
-  if(!invoice.items?.length) {const p=document.createElement("p");p.textContent="لا توجد أصناف";list.appendChild(p);}
-  const total=(invoice.items||[]).reduce((sum,i)=>sum+(Number(i.qty)||0)*(Number(i.price)||0),0);
-  set("eTotal","المجموع: "+total.toFixed(3)+" د.ب");
-  if(String(invoice.notes||"").trim()) set("eNotes",invoice.notes);
-  else {card.querySelector("#eNotesTitle").remove();card.querySelector("#eNotes").remove();}
-  return card;
-}
-function waitForPaint() {return new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));}
-async function renderInvoicePng() {
-  if(typeof html2canvas!=="function") throw new Error("تعذر تحميل أداة حفظ الصور. تأكد من اتصال الإنترنت ثم حدّث الصفحة.");
-  const invoice=collectInvoice();
-  const stage=el("renderStage");stage.replaceChildren();
-  const card=buildExportCard(invoice);stage.appendChild(card);stage.classList.add("open");
-  try {
-    if(document.fonts?.ready) await document.fonts.ready;
-    await waitForPaint();
-    const scale=card.scrollHeight>4500?1.5:2;
-    const canvas=await html2canvas(card,{backgroundColor:"#ffffff",scale:scale,useCORS:true,logging:false,scrollX:0,scrollY:0});
-    const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error("تعذّر إنشاء الصورة")),"image/png"));
-    return {blob,fileName:"abu-abbas-invoice-"+(invoice.number.replace(/[^a-zA-Z0-9_-]/g,"_")||"new")+".png",invoice};
-  } finally {stage.classList.remove("open");stage.replaceChildren();}
-}
-function downloadBlob(blob,fileName) {
-  const url=URL.createObjectURL(blob);const a=document.createElement("a");
-  a.href=url;a.download=fileName;document.body.appendChild(a);a.click();a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),60000);
-}
-function showPreview(blob,fileName,instructions) {
-  closePreview();
-  previewBlobUrl=URL.createObjectURL(blob);previewFileName=fileName;
-  el("previewImage").src=previewBlobUrl;
-  el("previewInstructions").textContent=instructions;
-  el("previewOverlay").classList.add("open");
-}
-function closePreview() {
-  el("previewOverlay").classList.remove("open");el("previewImage").removeAttribute("src");
-  if(previewBlobUrl) URL.revokeObjectURL(previewBlobUrl);
-  previewBlobUrl=null;
-}
-function downloadPreview() {
-  if(!previewBlobUrl)return;
-  const a=document.createElement("a");a.href=previewBlobUrl;a.download=previewFileName;document.body.appendChild(a);a.click();a.remove();
-}
-function isIOS() {return /iPhone|iPad|iPod/.test(navigator.userAgent);}
-async function withBusy(buttonId,operation) {
-  const button=el(buttonId);button.disabled=true;
-  const old=button.textContent;button.textContent="جاري تجهيز الصورة...";
-  try {await operation();} catch(error) {console.error(error);alert(error?.message||"حدث خطأ عند إنشاء صورة الفاتورة");}
-  finally {button.disabled=false;button.textContent=old;}
-}
-async function saveInvoiceImage() {
-  await withBusy("saveImageButton",async()=>{
-    const {blob,fileName}=await renderInvoicePng();
-    if(isIOS()) {
-      // فتح الصورة داخل الصفحة: يمكن حفظها في «الصور» بالضغط المطول.
-      showPreview(blob,fileName,"على الآيفون: اضغط مطوّلاً على صورة الفاتورة واختر «حفظ في الصور». أو اضغط «تنزيل الصورة» لحفظها في الملفات.");
-    } else {
-      downloadBlob(blob,fileName);
-      showPreview(blob,fileName,"تم طلب تنزيل صورة الفاتورة. يمكنك أيضًا الضغط مطوّلاً على الصورة لحفظها في هاتفك.");
-    }
+});
+
+
+$(document).ready(function() {
+	echo.init({
+		offset: 600,
+		throttle: 200,
+		unload: false,
+	});
+
+
+	if($('ul.pagination').length) {
+		// $('ul.pagination.pagination-arrows li a').first().html("<i class='fa fa-arrow-left'></i>");
+		// $('ul.pagination.pagination-arrows li a').last().html("<i class='fa fa-arrow-right'></i>");
+		$('ul.pagination.pagination-arrows li a').first().html("<i class='fa fa-arrow-right'></i>");
+		$('ul.pagination.pagination-arrows li a').last().html("<i class='fa fa-arrow-left'></i>");
+	}
+
+});
+
+// In-button Feedback (Icon)
+$(document).ready(function() {
+	$('.btn-with-loader').on('click', function() {
+		var $this = $(this);
+		$this.button('Loading').prepend('<i class="btn-loader"></i>');
+		setTimeout(function() {
+			$this.button('reset');
+		}, 2000);
+	});
+});
+// Page Loading Feedback (Red Stripe)
+$(document).ready(function() {
+  $(".pm-section-highlighted, .pm-ul-browse-videos").animsition({
+	linkElement: '.animsition',
+	loading: false,
+	timeout: true,
+	timeoutCountdown: 5000,
+	browser: [ 'animation-duration', '-webkit-animation-duration'],
+	overlay : false,
+	overlayClass : '',
+	overlayParentElement : 'body',
+	transition: function(url){ 
+		$('header').append('<div class="pm-horizontal-loader"></div>');
+		window.location.href = url; }
   });
+});
+
+// Global settings for notifications
+$(document).ready(function() {
+	$.notifyDefaults({
+	// settings
+	element: 'body',
+	position: null,
+	type: "info",
+	allow_dismiss: true,
+	newest_on_top: true,
+	showProgressbar: false,
+	placement: {
+		from: "top", // top, bottom
+		align: "right" // left, right, center
+	},
+	offset: {
+		x: 20,
+		y: 100
+		},
+	spacing: 10,
+	z_index: 1031,
+	delay: 10000,
+	timer: 1000,
+	url_target: '_blank',
+	mouse_over: null,
+	animate: {
+		enter: 'animated fadeInDown',//'animated fadeIn',
+		exit: 'animated fadeOutUpBig',//'animated fadeOut'
+	},
+	onShow: null,
+	onShown: null,
+	onClose: null,
+	onClosed: null,
+	template: '<div data-notify="container" class="growl alert alert-{0}" role="alert">' +
+				'<button type="button" aria-hidden="true" class="close" data-notify="dismiss">&times;</button>' +
+				'<span data-notify="icon"></span> ' +
+				'<span data-notify="title">{1}</span> ' +
+				'<span data-notify="message">{2}</span>' +
+				'<div class="progress" data-notify="progressbar">' +
+					'<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+				'</div>' +
+				'<a href="{3}" target="{4}" data-notify="url"></a>' +
+			'</div>',
+	PM_exitAnimationTimeout: 0 // PHP Melody custom settings
+	});
+});
+</script>
+
+
+
+
+
+<script src="https://e.cimalight.co/templates/echo/js/jquery.plugins.a.js" type="text/javascript"></script>
+<script src="https://e.cimalight.co/js/jquery.typewatch.js" type="text/javascript"></script>
+<script type="text/javascript" src="https://e.cimalight.co/js/bootstrap-notify.min.js"></script>
+<script src="https://e.cimalight.co/js/melody.dev.js" type="text/javascript"></script>
+<script src="https://e.cimalight.co/templates/echo/js/melody.dev.js" type="text/javascript"></script>
+<!-- <script src="https://e.cimalight.co/templates/echo/js/lightbox.dev.js" type="text/javascript"></script> -->
+<script src="https://e.cimalight.co/templates/echo/js/jasny-bootstrap.min.js" type="text/javascript"></script>
+<script src="https://e.cimalight.co/templates/echo/js/jquery.plugins.b.js" type="text/javascript"></script>
+
+
+ 
+
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$('textarea').autosize();
+	//$('.fileinput').fileinput();
+	$(".ellipsis").dotdotdot({
+	ellipsis : '...',
+	wrap : 'word',
+	watch: true,
+	height : 40
+	});
+});
+</script>
+
+
+
+<script type="text/javascript">
+$(document).ready(function () {
+// live search
+$('#pm-search').typeWatch({
+	callback: function() {		
+	$.ajax({
+		type: "POST",
+		url: MELODYURL2 + "/ajax-search.php",
+		data: {
+			"queryString": $('#pm-search').val()
+		},
+		dataType: "html",
+		success: function(b){
+			if (b.length > 0) {
+				$(".pm-search-suggestions-list").html(b);
+
+				$(".pm-search-suggestions").show(function() {
+
+					var $listItems = $('.pm-search-suggestions-list').find('li');
+
+					$('#pm-search').keydown(function(e)
+					{
+
+						var key = e.keyCode,
+							$selected = $listItems.filter('.selected'),
+							$current;
+
+						if ( key === 27 ) { // ESC
+							$(".pm-search-suggestions").hide();
+						}
+
+						if( key == 38 || key == 40 ){ // UP/DOWN
+							e.preventDefault();
+						}
+
+						if ( key != 38 && key != 40 ) return;
+
+						$listItems.removeClass('selected');
+
+						if ( key == 40 ) // Down key
+						{
+							if ( ! $selected.length || $selected.is(':last-child') ) {
+								$current = $listItems.eq(0);
+							}
+							else {
+								$current = $selected.next();
+							}
+						}
+						else if ( key == 38 ) // Up key
+						{
+							if ( ! $selected.length || $selected.is(':first-child') ) {
+								$current = $listItems.last();
+							}
+							else {
+								$current = $selected.prev();
+							}
+						}
+
+						$current.addClass('selected');
+						$selected_url = $current.find('a').attr('href');
+
+						$selected_id = $current.attr('data-video-id');
+
+						($('#pm-video-id').val($selected_id));
+
+					});
+
+					$(document).on('click', (function(e) {
+						if(e.target.className !== "pm-search-suggestions" && e.target.id !== "pm-search") {
+								$(".pm-search-suggestions").hide();
+						}}));
+				});
+
+			} else {
+				$(".pm-search-suggestions").hide();
+			}
+		}
+	});
+},
+wait: 400,
+highlight: true,
+captureLength: 3
+});
+});
+</script>
+
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$("ul[class^='pm-ul-carousel-videos']").each(
+	function() {
+		var slides_id = $(this).data("slider-id");
+		var slides = $(this).data("slides");
+		var video_carousel = $('#pm-carousel_' + slides_id);
+
+		if(slides == null) {
+			var slides = 4;
+		}
+		video_carousel.slick({
+			rtl: true,			lazyLoad: 'ondemand',
+			slidesToShow: slides, 
+			slidesToScroll: slides - 1,
+			prevArrow	: "#pm-slide-prev_" + slides_id,
+			nextArrow	: "#pm-slide-next_" + slides_id,
+			speed: 150,
+			responsive: [
+			{
+				breakpoint: 1024,
+				settings: {
+					slidesToShow: 3,
+					slidesToScroll: 3
+				}
+			},
+			{
+				breakpoint: 600,
+				settings: {
+					slidesToShow: 2,
+					slidesToScroll: 2
+				}
+			}
+			]
+		});
+	});
+});
+</script>
+
+
+
+<script src="https://e.cimalight.co/templates/echo/js/jquery.readmore.js" type="text/javascript"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+if (document.querySelector('.pm-series-description') !== null) {
+	$('.pm-series-description').readmore({
+		speed: 50,
+		maxHeight: 100,
+		moreLink: '<a href="#">' + pm_lang.show_more +'</a>',
+		lessLink: '<a href="#">' + pm_lang.show_less +'</a>',
+	});
 }
-async function shareInvoiceImage() {
-  await withBusy("shareImageButton",async()=>{
-    const {blob,fileName,invoice}=await renderInvoicePng();
-    const file=new File([blob],fileName,{type:"image/png"});
-    if(navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))) {
-      try {
-        await navigator.share({files:[file],title:"فاتورة أبو عباس",text:"فاتورة رقم "+(invoice.number||"جديدة")});
-        return;
-      } catch(error) {
-        if(error?.name==="AbortError")return; // المستخدم أغلق قائمة المشاركة.
-        console.warn("تعذرت المشاركة المباشرة",error);
-      }
-    }
-    showPreview(blob,fileName,"المشاركة المباشرة للصورة غير متاحة في هذا المتصفح. احفظ الصورة من هنا، ثم افتح واتساب وأرسلها كمرفق. على الآيفون اضغط مطوّلاً على الصورة لحفظها في الصور.");
-  });
-}
-newInvoice();
+});
+</script>
+
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#modal-login-form, #modal-register-form').on('shown.bs.modal', function() {
+		document.activeElement.blur();
+		$(this).find(".modal-body :input:visible").first().focus();
+	});
+});
+</script>
+
+
+
+
+<script type="text/javascript">
+(function() {
+	"use strict";
+	var toggles = document.querySelectorAll("#navslide-toggle");
+
+	for (var i = toggles.length - 1; i >= 0; i--) {
+	var toggle = toggles[i];
+	toggleHandler(toggle);
+	};
+
+	function toggleHandler(toggle) {
+	toggle.addEventListener( "click", function(e) {
+		e.preventDefault();
+		(this.classList.contains("is-active") === true) ? this.classList.remove("is-active") : this.classList.add("is-active");
+	});
+	}
+})();
+
+</script>
+
+
+
+
+
+<script src="https://e.cimalight.co/templates/echo/js/jquery.cropit.js" type="text/javascript"></script>
+<script type="text/javascript"> 
+$(function() {
+	var cropit_avatar_notify = null;
+	var cropit_cover_notify = null;
+	var cropit_notify_type = 'info';
+	
+	// Avatar
+	$('.pm-profile-avatar-pic').cropit({
+		smallImage: 'allow',
+		// width: 180, 
+		// height: 180,
+		width: 120,
+		height: 120,
+		preview: '.pm-profile-avatar-preview',
+		onImageLoading: function(){
+			cropit_avatar_notify = $.notify({message: pm_lang.please_wait}, {type: cropit_notify_type});
+		},
+		onImageLoaded: function() {
+			cropit_avatar_notify.close();
+		},
+		onImageError: function(){
+			cropit_avatar_notify.close();
+		}
+	});
+
+	$('#btn-edit-avatar').click(function() {
+		$('#cropit-avatar-input').click();
+		$('#cropit-avatar-form').css('visibility', 'visible');
+		$('.cropit-image-preview').removeClass('animated fadeIn');
+	});
+
+	$('.btn-cancel-avatar').click(function() {
+		$('.pm-profile-avatar-pic .cropit-image-preview').removeClass('cropit-image-loaded').addClass('animated fadeIn');
+		$('#cropit-avatar-form').css('visibility', 'hidden');
+		return false;
+	});
+
+	$('form#cropit-avatar-form').submit(function() {
+		
+		var image_data = $('.pm-profile-avatar-pic').cropit('export', {
+			type: 'image/jpeg',
+			quality: .9,
+			fillBg: '#333'
+		});
+		
+		// Move cropped image data to hidden input
+		$('.hidden-avatar-data-img').val(image_data);
+		
+		$.ajax({
+			url: MELODYURL2 + "/ajax.php",
+			type: "POST",
+			dataType: "json",
+			data: $('#cropit-avatar-form').serialize(),
+			beforeSend: function(jqXHR, settings) {
+				// clean error message container
+				//cropit_avatar_notify.close();
+				$.notifyClose();
+				cropit_avatar_notify = $.notify({message: pm_lang.swfupload_status_uploading}, {type: cropit_notify_type});
+			},
+		})
+		.done(function(data){
+			cropit_avatar_notify.close();
+			if (data.success) { 
+				// hide form action buttons 
+				$('#cropit-avatar-form').css('visibility', 'hidden');
+				
+				// reset background with uploaded image 
+				$('.pm-profile-avatar-pic .cropit-image-preview img').attr('src', data.file_url);
+				
+				// stop image movement ability
+				$('.pm-profile-avatar-pic .cropit-image-preview').addClass('animated fadeIn');
+				// timeout required to allow time for the uploaded image to load before removing the current image obj (and avoid a image-swapping 'glitch')
+				setTimeout(function(){
+					$('.pm-profile-avatar-pic .cropit-image-preview').removeClass('cropit-image-loaded')
+				}, 700);
+				
+				// unload selected image to let the user re-select the same image
+				$('.pm-profile-avatar-pic input.cropit-image-input')[0].value = null;
+			}
+			cropit_avatar_notify = $.notify({message: data.msg}, {type: data.alert_type});
+		});
+
+		return false;
+	});
+	
+	var cropit_cover_height = parseInt($('.pm-profile-cover-preview').attr('data-cropit-height'));
+	if ( ! cropit_cover_height) {
+		cropit_cover_height = 200;
+	}
+		
+	// Cover
+	$('.pm-profile-cover-preview').cropit({
+		smallImage: 'allow',
+		height: cropit_cover_height,
+		onImageLoading: function(){
+			cropit_cover_notify = $.notify({message: pm_lang.please_wait}, {type: cropit_notify_type});
+		},
+		onImageLoaded: function() {
+			cropit_cover_notify.close();
+		},
+		onImageError: function(){
+			cropit_cover_notify.close();
+		}
+	});
+
+	$('#btn-edit-cover').click(function() {
+		$('#cropit-cover-input').click();
+		$('#cropit-cover-form').css('visibility', 'visible');
+		$('.cropit-image-preview').removeClass('animated fadeIn');
+	});
+
+	$('.btn-cancel').click(function() {
+		$('.pm-profile-cover-preview .cropit-image-preview').removeClass('cropit-image-loaded').addClass('animated fadeIn');
+		$('#cropit-cover-form').css('visibility', 'hidden');
+		return false;
+	});
+
+	$('form#cropit-cover-form').submit(function() {
+		
+		var image_data = $('.pm-profile-cover-preview').cropit('export', {
+			type: 'image/jpeg',
+			quality: .9,
+			fillBg: '#333'
+		});
+		
+		// Move cropped image data to hidden input
+		$('.hidden-cover-data-img').val(image_data);
+		
+		$.ajax({
+			url: MELODYURL2 + "/ajax.php",
+			type: "POST",
+			dataType: "json",
+			data: $('#cropit-cover-form').serialize(),
+			beforeSend: function(jqXHR, settings) {
+				// clean error message container
+				//cropit_cover_notify.close();
+				$.notifyClose();
+				cropit_cover_notify = $.notify({message: pm_lang.swfupload_status_uploading}, {type: cropit_notify_type});
+			},
+		})
+		.done(function(data){
+			cropit_cover_notify.close();
+			if (data.success) { 
+				// hide form action buttons 
+				$('#cropit-cover-form').css('visibility', 'hidden');
+				
+				// reset background with uploaded image 
+				$('.pm-profile-cover-preview .cropit-image-preview img').attr('src', data.file_url);
+				
+				// stop image movement ability
+				$('.pm-profile-cover-preview .cropit-image-preview').addClass('animated fadeIn');
+				// timeout required to allow time for the uploaded image to load before removing the current image obj (and avoid a image-swapping 'glitch')
+				setTimeout(function(){
+					$('.pm-profile-cover-preview .cropit-image-preview').removeClass('cropit-image-loaded')
+				}, 700);
+				
+				// unload selected image to let the user re-select the same image
+				$('.pm-profile-cover-preview input.cropit-image-input')[0].value = null;
+			}
+			cropit_cover_notify = $.notify({message: data.msg}, {type: data.alert_type});
+		});
+
+		return false;
+	});
+});
+</script>
+
+
+ 
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WCRM02B6T3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-WCRM02B6T3');
 </script>
 </body>
 </html>
